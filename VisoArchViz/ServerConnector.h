@@ -33,6 +33,8 @@ public:
 		void DisconnectSocket(int32 ConnectionId);
 	UFUNCTION(BlueprintCallable, Category = "Test")
 		bool SendStringData(int32 ConnectionId, FString StringData);
+	UFUNCTION(BlueprintCallable, Category = "Test")
+		bool SendIntData(int32 ConnectionId, int32 IntData);
 
 	//Define a map to store all connection ids
 	std::map<int32, FSocket*> MySocketMap;

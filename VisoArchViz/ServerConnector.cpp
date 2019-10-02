@@ -9,6 +9,7 @@
 #include "SocketSubsystem.h"
 #include "Runtime/Networking/Public/Networking.h"
 #include "CString.h"
+#include "string"
 #include "Interfaces/IPv4/IPv4Address.h"
 #include "Components/StaticMeshComponent.h"
 #include <Platform.h>
@@ -117,7 +118,7 @@ bool AServerConnector::SendStringData(int32 ConnectionId, FString StringData)
 	}
 	else
 	{
-		//Init data
+		//Serialize Data
 		FString serialized = StringData;
 		TCHAR *serializedChar = serialized.GetCharArray().GetData();
 		int32 size = FCString::Strlen(serializedChar);
@@ -137,6 +138,59 @@ bool AServerConnector::SendStringData(int32 ConnectionId, FString StringData)
 			if (successful)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("String sent!"));
+			}
+			else
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Sending failed!"));
+			return successful;
+
+			break;
+		case SCS_ConnectionError:
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Socket connection error!"));
+			successful = false;
+			break;
+		default:
+			break;
+		}
+	}
+
+	return successful;
+
+}
+
+bool AServerConnector::SendIntData(int32 ConnectionId, int32 Int32Data)
+{
+	bool successful;
+	//Check if socket exists on that Id
+	FString Message;
+	if (MySocketMap.find(ConnectionId) == MySocketMap.end())
+	{
+		Message = "There is no socket with id: ";
+		//Message.Append(Message);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Message.Append(FString::FromInt(ConnectionId)));
+		successful = false;
+	}
+	else
+	{
+		//Serialize Data
+		FString serialized = FString::FromInt(Int32Data);
+		TCHAR *serializedChar = serialized.GetCharArray().GetData();
+		int32 size = FCString::Strlen(serializedChar);
+		int32 sent = 0;
+		//Check cases
+		switch (MySocketMap[ConnectionId]->GetConnectionState())
+		{
+		case SCS_NotConnected:
+			Message = "Socket not connected: ";
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, Message.Append(FString::FromInt(ConnectionId)));
+			successful = false;
+			break;
+		case SCS_Connected:
+			//Actually send
+			successful = MySocketMap[ConnectionId]->Send((uint8*)TCHAR_TO_UTF8(serializedChar), size, sent);
+
+			if (successful)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Int sent!"));
 			}
 			else
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Sending failed!"));
