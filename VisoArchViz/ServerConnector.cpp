@@ -27,6 +27,7 @@ AServerConnector::AServerConnector()
 
 }
 
+
 // Called when the game starts or when spawned
 void AServerConnector::BeginPlay()
 {
@@ -210,3 +211,80 @@ bool AServerConnector::SendIntData(int32 ConnectionId, int32 Int32Data)
 
 }
 
+/*
+//Thread
+int32 AServerConnector::TryAsync(int32 number1, int32 number2)
+{
+	AsyncTaskConnectSocket* AsyncTaskConnectSocket::Runnable = NULL;
+	AsyncTaskConnectSocket::AsyncTaskConnectSocket(int32 number1, int32 number2)
+	{
+		int32 nr1 = number1;
+		int32 nr2 = number2;
+
+		Thread = FRunnableThread::Create(this, TEXT("MyThread"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
+	}
+
+	AsyncTaskConnectSocket::~FAsyncTaskConnectSocket()
+	{
+		delete Thread;
+		Thread = NULL;
+	}
+
+	//Init
+	bool AsyncTaskConnectSocket::Init()
+	{
+		//Init the Data
+		int32 result;
+		return true;
+	}
+
+	//Run
+	uint32 AsyncTaskConnectSocket::Run()
+	{
+		while (StopTaskCounter.GetValue() == 0 && !IsFinished())
+		{
+			result = number1 * number2;
+		}
+
+		return 0;
+	}
+	//Stop
+	void AsyncTaskConnectSocket::Stop()
+	{
+		StopTaskCounter.Increment();
+	}
+
+	AsyncTaskConnectSocket* AsyncTaskConnectSocket::MyInit(int32 number1, int32 number2)
+	{
+		//Create new instance of thread if it does not exist
+		//and the platform supports multi threading
+		if (!Runnable && FPlatformProcess::SupportsMultithreading())
+		{
+			Runnable = new AsyncTaskConnectSocket(number1, number2);
+		}
+		return Runnable;
+	}
+
+	void AsyncTaskConnectSocket::EnsureCompletion()
+	{
+		Stop();
+		Thread->WaitForCompletion();
+	}
+
+	void AsyncTaskConnectSocket::Shutdown()
+	{
+		if (Runnable)
+		{
+			Runnable->EnsureCompletion();
+			delete Runnable;
+			Runnable = NULL;
+		}
+	}
+
+	bool AsyncTaskConnectSocket::IsThreadFinished()
+	{
+		if (Runnable) return Runnable->IsFinished();
+		return true;
+	}
+}
+*/
